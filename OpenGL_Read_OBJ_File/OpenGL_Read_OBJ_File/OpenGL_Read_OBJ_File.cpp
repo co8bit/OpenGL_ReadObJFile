@@ -177,8 +177,8 @@ void myDisplay()
 	glRotatef(ax,1.0f,0.0f,0.0f);
 	glRotatef(ay,0.0f,1.0f,0.0f);
 
-	//setLight();
-	//setMaterial();
+	setLight();
+	setMaterial();
 	
 	glBindTexture(GL_TEXTURE_2D,texture);// π”√Œ∆¿Ì
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -204,17 +204,17 @@ void myDisplay()
     glutSwapBuffers();
 }
 
-void init(int tempObj,int tempTexture)
+void init(int tempObj = 3,int tempTexture = 0)
 {
 	ObjFile objFile;
 	
 	switch (tempObj)
 	{
-	case 0:objFile.readObjFile("Ball_dABF.obj");break;
-	case 1:objFile.readObjFile("Beetle_ABF.obj");break;
-	case 2:objFile.readObjFile("Cow_dABF.obj");break;
-	case 3:objFile.readObjFile("Gargoyle_ABF.obj");break;
-	case 4:objFile.readObjFile("Isis_dABF.obj");break;
+	case 1:objFile.readObjFile("Ball_dABF.obj");break;
+	case 2:objFile.readObjFile("Beetle_ABF.obj");break;
+	case 3:objFile.readObjFile("Cow_dABF.obj");break;
+	case 4:objFile.readObjFile("Gargoyle_ABF.obj");break;
+	case 5:objFile.readObjFile("Isis_dABF.obj");break;
 	default:break;
 	}
 	faces = objFile.getFace();
@@ -249,7 +249,7 @@ int _tmain(int argc, char* argv[])
 	glutDisplayFunc(&myDisplay);
 	glutIdleFunc(&myIdle);
 
-	init(2,2);
+	init(2,1);
 
 	glutMainLoop();
 	return 0;
