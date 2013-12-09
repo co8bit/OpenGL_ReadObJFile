@@ -188,13 +188,13 @@ void myDisplay()
 		glBegin(GL_TRIANGLES);
   
 		glVertex3f(faces[i].getVertex1().x,faces[i].getVertex1().y,faces[i].getVertex1().z);
-		//glTexCoord2f(faces[i].getTexture1().x,faces[i].getTexture1().y);
+		glTexCoord2f(faces[i].getTexture1().x,faces[i].getTexture1().y);
 		
 		glVertex3f(faces[i].getVertex2().x,faces[i].getVertex2().y,faces[i].getVertex2().z);
-		//glTexCoord2f(faces[i].getTexture2().x,faces[i].getTexture2().y);
+		glTexCoord2f(faces[i].getTexture2().x,faces[i].getTexture2().y);
 		
 		glVertex3f(faces[i].getVertex3().x,faces[i].getVertex3().y,faces[i].getVertex3().z);
-		//glTexCoord2f(faces[i].getTexture3().x,faces[i].getTexture3().y);
+		glTexCoord2f(faces[i].getTexture3().x,faces[i].getTexture3().y);
 		glEnd();
 	}
 
