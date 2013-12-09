@@ -41,5 +41,8 @@ public:
 	Vertex getVertex1(){return vertex1;}
 	Vertex getVertex2(){return vertex2;}
 	Vertex getVertex3(){return vertex3;}
+	Texture getTexture1(){return texture1;}
+	Texture getTexture2(){return texture2;}
+	Texture getTexture3(){return texture3;}
 };
 #endif

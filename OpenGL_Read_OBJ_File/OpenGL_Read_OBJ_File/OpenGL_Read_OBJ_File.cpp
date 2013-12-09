@@ -10,6 +10,7 @@ GLint mx = 0,my = 0;
 GLint MouseDown = 0;
 GLfloat aspect = 1;
 vector<Face> faces;
+GLuint texture;
 
 void myIdle()
 {
@@ -82,8 +83,11 @@ void myMotion(int x,int y)
 	}
 }
 
-void setLight()
+void setLight()//设置光源
 {
+	/*
+	 *第一种光源
+	 *
 	static const GLfloat light_position[] = {50.0f,50.0f,50.0f,0.0f};
 	static const GLfloat light_ambient[] = {0.0f,0.0f,0.0f,0.0f};
 	static const GLfloat light_diffuse[] = {1.0f,0.9f,0.9f,0.0f};
@@ -101,8 +105,57 @@ void setLight()
 	glEnable(GL_LIGHT0);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_DEPTH_TEST);
+	*/
+	
+	/*
+	 *第二种太阳光源，它是一种白色的光源
+	 */
+	{
+		GLfloat sun_light_position[] = {0.0f, 0.0f, 0.0f, 1.0f};
+		GLfloat sun_light_ambient[]  = {0.0f, 0.0f, 0.0f, 1.0f};
+		GLfloat sun_light_diffuse[]  = {1.0f, 1.0f, 1.0f, 1.0f};
+		GLfloat sun_light_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
+		glLightfv(GL_LIGHT0, GL_POSITION, sun_light_position);
+		glLightfv(GL_LIGHT0, GL_AMBIENT,  sun_light_ambient);
+		glLightfv(GL_LIGHT0, GL_DIFFUSE,  sun_light_diffuse);
+		glLightfv(GL_LIGHT0, GL_SPECULAR, sun_light_specular);
+		glEnable(GL_LIGHT0);
+		glEnable(GL_LIGHTING);
+		glEnable(GL_DEPTH_TEST);
+	} 
 }
 
+void setMaterial()// 设置物体的材质
+{
+		/*
+		 *第一种材质
+		 *
+		GLfloat sun_mat_ambient[]  = {0.0f, 0.0f, 0.0f, 1.0f};
+		GLfloat sun_mat_diffuse[]  = {0.0f, 0.0f, 0.0f, 1.0f};
+		GLfloat sun_mat_specular[] = {0.0f, 0.0f, 0.0f, 1.0f};
+		GLfloat sun_mat_emission[] = {0.5f, 0.0f, 0.0f, 1.0f};
+		GLfloat sun_mat_shininess  = 0.0f;
+		glMaterialfv(GL_FRONT, GL_AMBIENT,   sun_mat_ambient);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE,   sun_mat_diffuse);
+		glMaterialfv(GL_FRONT, GL_SPECULAR,  sun_mat_specular);
+		glMaterialfv(GL_FRONT, GL_EMISSION,  sun_mat_emission);
+		glMaterialf(GL_FRONT, GL_SHININESS, sun_mat_shininess);
+		*/
+
+		/*
+		 *第二种材质
+		 */
+		GLfloat earth_mat_ambient[]  = {0.0f, 0.0f, 0.5f, 1.0f};
+		GLfloat earth_mat_diffuse[]  = {0.0f, 0.0f, 0.5f, 1.0f};
+		GLfloat earth_mat_specular[] = {0.0f, 0.0f, 1.0f, 1.0f};
+		GLfloat earth_mat_emission[] = {0.0f, 0.0f, 0.0f, 1.0f};
+		GLfloat earth_mat_shininess  = 30.0f;
+		glMaterialfv(GL_FRONT, GL_AMBIENT,   earth_mat_ambient);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE,   earth_mat_diffuse);
+		glMaterialfv(GL_FRONT, GL_SPECULAR,  earth_mat_specular);
+		glMaterialfv(GL_FRONT, GL_EMISSION,  earth_mat_emission);
+		glMaterialf (GL_FRONT, GL_SHININESS, earth_mat_shininess);
+}
 
 void myDisplay()
 {
@@ -124,19 +177,24 @@ void myDisplay()
 	glRotatef(ax,1.0f,0.0f,0.0f);
 	glRotatef(ay,0.0f,1.0f,0.0f);
 
+	//setLight();
+	//setMaterial();
+	
+	glBindTexture(GL_TEXTURE_2D,texture);//使用纹理
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 	for (int i = 0; i < faces.size(); i++)
 	{
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glBegin(GL_TRIANGLES);
   
 		glVertex3f(faces[i].getVertex1().x,faces[i].getVertex1().y,faces[i].getVertex1().z);
-  
+		//glTexCoord2f(faces[i].getTexture1().x,faces[i].getTexture1().y);
 		
 		glVertex3f(faces[i].getVertex2().x,faces[i].getVertex2().y,faces[i].getVertex2().z);
-  
+		//glTexCoord2f(faces[i].getTexture2().x,faces[i].getTexture2().y);
 		
 		glVertex3f(faces[i].getVertex3().x,faces[i].getVertex3().y,faces[i].getVertex3().z);
-  
+		//glTexCoord2f(faces[i].getTexture3().x,faces[i].getTexture3().y);
 		glEnd();
 	}
 
@@ -146,17 +204,34 @@ void myDisplay()
     glutSwapBuffers();
 }
 
-void init()
+void init(int tempObj,int tempTexture)
 {
 	ObjFile objFile;
-	objFile.readObjFile("Cow_dABF.obj");
+	
+	switch (tempObj)
+	{
+	case 0:objFile.readObjFile("Ball_dABF.obj");break;
+	case 1:objFile.readObjFile("Beetle_ABF.obj");break;
+	case 2:objFile.readObjFile("Cow_dABF.obj");break;
+	case 3:objFile.readObjFile("Gargoyle_ABF.obj");break;
+	case 4:objFile.readObjFile("Isis_dABF.obj");break;
+	default:break;
+	}
 	faces = objFile.getFace();
+
+	
+	switch (tempTexture)
+	{
+	case 0:texture = 0;break;
+	case 1:texture = objFile.readTexture("Texture.bmp");break;
+	case 2:texture = objFile.readTexture("Texture2.bmp");break;
+	default:break;
+	}
 
 	glClearColor(0.93,0.94,0.98,1.0);
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_TEXTURE_2D);
-	setLight();
 }
 
 int _tmain(int argc, char* argv[])
@@ -173,7 +248,8 @@ int _tmain(int argc, char* argv[])
 	glutMotionFunc(&myMotion);
 	glutDisplayFunc(&myDisplay);
 	glutIdleFunc(&myIdle);
-	init();
+
+	init(2,2);
 
 	glutMainLoop();
 	return 0;
