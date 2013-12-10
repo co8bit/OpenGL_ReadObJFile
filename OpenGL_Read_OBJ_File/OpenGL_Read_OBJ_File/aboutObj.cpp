@@ -6,6 +6,7 @@ void ObjFile::readObjFile(string fileName)
 	ifstream fin;
 	vector<Vertex> vertexs;
 	vector<Texture> textures;
+	vector<Normal> normals;
 
 	string line,word;
 
@@ -18,7 +19,7 @@ void ObjFile::readObjFile(string fileName)
 	int j = 1;
 	while(getline(fin,line))
 	{
-		if (j==1925)//该处理第1923行了
+		if (j == 26950)//该处理第j行了,use for debug
 		{
 			j--;
 			j++;
@@ -26,18 +27,25 @@ void ObjFile::readObjFile(string fileName)
 		if(line.size() == 0 || line[0] == '#') {j++;continue;}
 		istringstream is(line);
 		is >> word;
-		if(word=="v")
+		if(word == "v")
 		{
 			Vertex p;
 			is>>p.x>>p.y>>p.z;
 			vertexs.push_back(p);
 		}
 		else 
-		if(word=="vt")
+		if(word == "vt")
 		{
 			Texture p;
 			is>>p.x>>p.y;
 			textures.push_back(p);
+		}
+		else
+		if(word == "vn")
+		{
+			Normal p;
+			is>>p.x>>p.y>>p.z;
+			normals.push_back(p);
 		}
 		else
 		if(word == "f")
@@ -45,9 +53,11 @@ void ObjFile::readObjFile(string fileName)
 			int c = 0;
 			long vertexNum[3];
 			long textureNum[3];
+			long normalNum[3];
 
 			int i = 0;
-			while(is >> word)
+			Face face;
+			while(is >> word)//处理每行的第1、2、3个点
 			{
 				c = count(word.begin(),word.end(),'/');
 				if(c == 0)
@@ -60,9 +70,24 @@ void ObjFile::readObjFile(string fileName)
 					vertexNum[i] = atoi(string(word.begin(),word.begin()+word.find("/")).c_str());
 					textureNum[i] = atoi(string(word.begin()+word.find("/")+1,word.end()).c_str());
 				}
+				else
+				if(c == 2)
+				{
+					int a = word.find("/");
+					int b = word.find("/",a+1);
+					vertexNum[i] = atoi(string(word.begin(),word.begin()+a).c_str());
+					textureNum[i] = atoi(string(word.begin()+a+1,word.begin()+b).c_str());
+					normalNum[i] = atoi(string(word.begin()+b+1,word.end()).c_str());
+				}
 				i++;
 			}
-			Face face(vertexs,textures,vertexNum,textureNum);
+			switch (c)
+			{
+				case 0:face.set(vertexs,vertexNum);break;
+				case 1:face.set(vertexs,textures,vertexNum,textureNum);break;
+				case 2:face.set(vertexs,textures,normals,vertexNum,textureNum,normalNum);break;
+				default:break;
+			}
 			faces.push_back(face);
 		}
 		j++;
@@ -152,7 +177,7 @@ GLuint ObjFile::readTexture(const char *file_name)//读取一个BMP文件作为纹理
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
-	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
+	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_BLEND);//如果要把纹理和光照混合，最后一个参数应该是GL_BLEND或者GL_MODULATE等，表示将光照结果与纹理颜色进行叠加，而不能仅使用纹理颜色来替换原有的像素颜色，这样就只能看见纹理，显示不了光照结果了。 
 	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,width,height,0,GL_BGR_EXT,GL_UNSIGNED_BYTE,pixels);
 	glBindTexture(GL_TEXTURE_2D,last_texture_ID);
 

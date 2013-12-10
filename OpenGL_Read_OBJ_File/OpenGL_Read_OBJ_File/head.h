@@ -21,28 +21,41 @@ public:
 	GLfloat x;
 	GLfloat y;
 	GLfloat z;
-	Vertex(const Vertex &a):x(a.x),y(a.y),z(a.z){}
-	Vertex(){}
+	//Vertex(const Vertex &a):x(a.x),y(a.y),z(a.z){}//前面必须要加const，不然报错
+	//Vertex(){}
 };
 struct Texture
 {
 	GLfloat x;
 	GLfloat y;
 };
+class Normal
+{
+public:
+	GLfloat x;
+	GLfloat y;
+	GLfloat z;
+	//Normal(const Normal &a):x(a.x),y(a.y),z(a.z){}
+	//Normal(){}
+};
 class Face
 {
 private:
 	Vertex vertex1,vertex2,vertex3;
 	Texture texture1,texture2,texture3;
+	Normal normal1,normal2,normal3;
 public:
-	Face(vector<Vertex> &vertexs,vector<Texture> &textures,long* vertexNum,long* textureNum);
-
-	void set(long vertex1Num,long vertex2Num,long vertex3Num,long texture1Num,long texture2Num,long texture3Num);
+	void set(vector<Vertex> &vertexs,long* vertexNum);
+	void set(vector<Vertex> &vertexs,vector<Texture> &textures,long* vertexNum,long* textureNum);
+	void set(vector<Vertex> &vertexs,vector<Texture> &textures,vector<Normal> &normals,long* vertexNum,long* textureNum,long* normalNum);
 	Vertex getVertex1(){return vertex1;}
 	Vertex getVertex2(){return vertex2;}
 	Vertex getVertex3(){return vertex3;}
 	Texture getTexture1(){return texture1;}
 	Texture getTexture2(){return texture2;}
 	Texture getTexture3(){return texture3;}
+	Normal getNormal1(){return normal1;}
+	Normal getNormal2(){return normal2;}
+	Normal getNormal3(){return normal3;}
 };
 #endif
